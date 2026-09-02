@@ -1,11 +1,25 @@
-# Merchant Payment Operations Intelligence Agent
+# RazorFlow Ops — Merchant Payment Operations Intelligence Agent
 
 AI-powered operations agent for Razorpay merchants. Automates settlement analysis, refund tracking, dispute evidence assembly, and root-cause diagnosis using Claude.
 
+## 🚀 Live Demo
+
+- **Frontend:** https://razorflow-ops-app.vercel.app
+- **Backend API:** https://razorflow-ops-backend.railway.app
+- **API Docs:** https://razorflow-ops-backend.railway.app/docs
+
+## Architecture
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│                    FastAPI + React Dashboard                  │
-│  /api/dashboard · /api/settlement · /api/refund · /api/dispute │
+│                 React Dashboard (Vite + Tailwind)             │
+│          http://localhost:3000  /  vercel.app                │
+└────────────────────────┬─────────────────────────────────────┘
+                         │  Axios + Vite Proxy
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                    FastAPI Backend (Python 3.12)              │
+│  /api/dashboard · /api/settlement · /api/refund · /api/dispute│
 └────────────────────────┬─────────────────────────────────────┘
                          │
         ┌────────────────┼────────────────┐
@@ -30,54 +44,78 @@ AI-powered operations agent for Razorpay merchants. Automates settlement analysi
               └──────────────────┘
 ```
 
-## Quick Start
+## 🎯 Quick Start
 
-### Docker (recommended)
+### Option 1: Docker (recommended for production)
 
 ```bash
-# 1. Clone and configure
-cp .env.example .env
-# Edit .env with your Razorpay + Claude keys
+# Clone the repo
+git clone https://github.com/karishmaram-tech/razorflow-ops.git
+cd razorflow-ops/merchant-payment-ops-agent
 
-# 2. Start everything
+# Configure environment
+cp .env.example .env
+# Edit .env with your keys
+
+# Start everything
 docker compose up -d
 
-# 3. Open dashboard
-open http://localhost:8000/dashboard
-
-# 4. API docs
-open http://localhost:8000/docs
+# Verify
+curl http://localhost:8000/health
 ```
 
-### Local Development
+### Option 2: Local Development
 
 ```bash
-# 1. Prerequisites: Python 3.10+, PostgreSQL, Redis
+# Prerequisites: Python 3.12+, PostgreSQL, Node.js 18+
 
-# 2. Start database
+# Start database
 docker compose up postgres redis -d
 
-# 3. Virtual environment
+# Backend setup
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-
-# 4. Configure
 cp .env.example .env
-# Edit .env
-
-# 5. Initialize database
 python scripts/setup_db.py
+python scripts/generate_demo.py --clean
+uvicorn src.main:app --reload --port 8080
 
-# 6. Load test data
-python scripts/load_test_data.py
-
-# 7. Run server
-uvicorn src.main:app --reload --port 8000
-
-# 8. Run tests
-pytest -v --cov=src
+# Frontend setup (new terminal)
+cd razorflow-ops-app
+npm install
+npm run dev
+# Open http://localhost:3000
 ```
+
+### Option 3: Deploy to Cloud
+
+```bash
+# --- Frontend → Vercel ---
+cd razorflow-ops-app
+npm install -g vercel
+vercel
+
+# --- Backend → Railway ---
+cd ../
+npm install -g @railway/cli
+railway login
+railway init
+railway up
+
+# --- Update frontend .env.production ---
+echo "VITE_API_URL=https://your-app.railway.app" > .env.production
+vercel --prod
+```
+
+## 📊 Dashboard
+
+Open `http://localhost:3000` (React) or `http://localhost:8080/dashboard` (built-in) to see:
+
+- **59 Critical Anomalies** — settlement delays, stuck refunds, deadline risks
+- **118 Warnings** — fee mismatches, partial settlements
+- **AI-Powered Recommendations** — wait for retry, contact bank, escalate to Razorpay
+- **Impact Metrics** — time saved, revenue recovered, chargebacks prevented
 
 ## API Reference
 
@@ -96,8 +134,8 @@ All `/api/*` endpoints require `X-Merchant-API-Key` header.
 ### Example: Dashboard
 
 ```bash
-curl -H "X-Merchant-API-Key: rzp_merchant_<your-uuid>" \
-     http://localhost:8000/api/dashboard
+curl -H "X-Merchant-API-Key: rzp_merchant_11111111-1111-1111-1111-111111111111" \
+     http://localhost:8080/api/dashboard
 ```
 
 Response:
@@ -111,52 +149,48 @@ Response:
     "time_saved_hours": 12.0,
     "revenue_recovered_inr": 45000.0,
     "chargebacks_won": 3
-  },
-  "summary": {
-    "total_anomalies": 8,
-    "critical_count": 2,
-    "warning_count": 4,
-    "info_count": 2
   }
 }
 ```
 
-### Example: Upload Evidence
-
-```bash
-curl -X POST http://localhost:8000/api/dispute/disp_xxx/evidence \
-  -H "X-Merchant-API-Key: rzp_merchant_<uuid>" \
-  -H "Content-Type: application/json" \
-  -d '{"evidence_type": "proof_of_delivery", "file_url": "https://s3.example.com/proof.pdf"}'
-```
-
-## Configuration
+## 🔧 Configuration
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `DATABASE_URL` | Yes | — | Async PostgreSQL connection string |
-| `ANTHROPIC_API_KEY` | Yes | — | Claude API key |
-| `RAZORPAY_KEY_ID` | Yes | — | Razorpay key ID |
-| `RAZORPAY_KEY_SECRET` | Yes | — | Razorpay key secret |
+| `DATABASE_URL` | Yes | — | Async PostgreSQL (`postgresql+asyncpg://...`) |
+| `DATABASE_URL_SYNC` | Yes | — | Sync PostgreSQL (`postgresql://...`) |
+| `ANTHROPIC_API_KEY` | No | — | Claude API key (LLM explainability) |
+| `RAZORPAY_KEY_ID` | No | — | Razorpay API key |
+| `RAZORPAY_KEY_SECRET` | No | — | Razorpay API secret |
 | `REDIS_URL` | No | — | Redis for caching |
 | `ENVIRONMENT` | No | `development` | `development` / `staging` / `production` |
 | `LOG_LEVEL` | No | `INFO` | `DEBUG` / `INFO` / `WARNING` / `ERROR` |
-| `DEBUG` | No | `false` | Enable SQL logging + docs |
 
-## Testing
+## 🧪 Testing
 
 ```bash
-# Full test suite
+# Full test suite — 218 tests, 70% coverage
 pytest -v
 
-# With coverage
+# With coverage report
 pytest -v --cov=src --cov-report=html
 
 # Specific module
 pytest tests/test_settlement_agent.py -v
 ```
 
-## Project Structure
+## 📦 Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 18, Vite, Tailwind CSS, Axios |
+| **Backend** | Python 3.12, FastAPI, SQLAlchemy, Pydantic |
+| **Database** | PostgreSQL 16, Redis 7 |
+| **AI** | Claude API (Anthropic) for LLM explainability |
+| **Deployment** | Vercel (frontend), Railway (backend), Docker |
+| **CI/CD** | GitHub Actions |
+
+## 🏗️ Project Structure
 
 ```
 merchant-payment-ops-agent/
@@ -178,19 +212,23 @@ merchant-payment-ops-agent/
 │   │   └── repository.py       # CRUD operations
 │   └── utils/
 │       ├── time_utils.py       # Working-day calculations
-│       ├── bank_codes.py       # 25+ bank response codes
+│       ├── bank_codes.py       # 30+ bank response codes
 │       ├── evidence_templates.py # 20+ dispute templates
 │       ├── metrics.py          # KPI calculations
-│       └── logging.py          # Structured logging setup
-├── ui/
-│   ├── dashboard.html          # React dashboard layout
-│   └── dashboard.js            # Dashboard logic + Chart.js
-├── tests/                      # 162+ test cases
+│       └── logging_config.py   # Structured logging
+├── razorflow-ops-app/          # React frontend
+│   ├── src/
+│   │   ├── pages/              # Dashboard, Settlement, Refund, Dispute, Metrics
+│   │   ├── components/         # Navbar, KPICard, IssuesTable, etc.
+│   │   └── api/                # Axios client with Vite proxy
+│   └── vite.config.js          # Dev server + API proxy
+├── ui/                         # Built-in dashboard (HTML + Chart.js)
+├── tests/                      # 218 test cases
 ├── scripts/
 │   ├── setup_db.py             # Database initialization
-│   ├── load_test_data.py       # Test data generation
-│   └── run_evaluation.py       # Before/after evaluation
-├── docs/                       # Detailed documentation
+│   ├── generate_demo.py        # Demo data generation
+│   └── load_test_data.py       # Test data generation
+├── docs/                       # Architecture, API, Algorithms docs
 ├── .github/workflows/          # CI/CD pipeline
 ├── docker-compose.yml          # PostgreSQL + Redis + API
 ├── Dockerfile                  # Production container
@@ -218,6 +256,6 @@ Dispute → EvidenceMapper → EvidenceAssembler → WinPredictor
           (20+ templates)  (DB + placeholder)   (base rate + adjustments)
 ```
 
-## License
+## 📝 License
 
 Proprietary — internal use only.
