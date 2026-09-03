@@ -1,4 +1,5 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import KPICardPremium from '../components/KPICardPremium';
 import AutomationCard from '../components/AutomationCard';
 import OperationCard from '../components/OperationCard';
@@ -39,8 +40,18 @@ export default function CommandCenter() {
 
   const { kpis, automations, critical_operations, impact, processors, next_deadline } = commandCenter;
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
+  };
+
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+  };
+
   return (
-    <div className="min-h-screen">
+    <motion.div className="min-h-screen" variants={containerVariants} initial="hidden" animate="visible">
       {/* Hero Header */}
       <div className="relative overflow-hidden border-b border-pf-border">
         <div className="absolute inset-0 opacity-30" style={{ background: 'radial-gradient(ellipse at top left, rgba(6,182,212,0.15), transparent 60%), radial-gradient(ellipse at bottom right, rgba(139,92,246,0.1), transparent 60%)' }} />
@@ -123,8 +134,8 @@ export default function CommandCenter() {
             </div>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {automations.map((auto) => (
-              <AutomationCard key={auto.id} automation={auto} onToggle={toggleAutopilot} />
+            {automations.map((auto, idx) => (
+              <AutomationCard key={auto.id} automation={auto} onToggle={toggleAutopilot} index={idx} />
             ))}
           </div>
         </section>
@@ -142,15 +153,15 @@ export default function CommandCenter() {
               </span>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {critical_operations.map((op) => (
-                <OperationCard key={op.id} operation={op} />
+              {critical_operations.map((op, idx) => (
+                <OperationCard key={op.id} operation={op} index={idx} />
               ))}
             </div>
           </section>
         )}
 
         {/* Impact Summary */}
-        <section className="bg-gradient-to-br from-pf-slate-800 to-pf-slate-900 rounded-xl border border-pf-border p-6">
+        <motion.section className="bg-gradient-to-br from-pf-slate-800 to-pf-slate-900 rounded-xl border border-pf-border p-6" variants={sectionVariants}>
           <h2 className="text-lg font-bold text-white mb-4">Monthly Impact</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
@@ -174,10 +185,10 @@ export default function CommandCenter() {
               <p className="text-xs text-pf-slate-500 mt-1">Payback in {impact.roi_months} months</p>
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Connected Processors */}
-        <section>
+        <motion.section variants={sectionVariants}>
           <h2 className="text-lg font-bold text-white mb-4">Connected Processors</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {processors.map((proc) => (
@@ -197,8 +208,8 @@ export default function CommandCenter() {
               </div>
             ))}
           </div>
-        </section>
+        </motion.section>
       </div>
-    </div>
+    </motion.div>
   );
 }
