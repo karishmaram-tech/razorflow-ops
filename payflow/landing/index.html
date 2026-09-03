@@ -4,304 +4,241 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PayFlow — The Operating System for Payment Operations</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="../frontend/public/favicon.svg" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', system-ui, sans-serif; background: #020617; color: #F1F5F9; -webkit-font-smoothing: antialiased; }
-    .gradient-text { background: linear-gradient(135deg, #06B6D4, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .gradient-bg { background: linear-gradient(135deg, #06B6D4, #8B5CF6); }
-    .gradient-border { border: 1px solid transparent; background-clip: padding-box; position: relative; }
-    .gradient-border::before { content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: linear-gradient(135deg, #06B6D4, #8B5CF6); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
-    a { text-decoration: none; color: inherit; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-    .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #06B6D4, #8B5CF6); color: white; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; font-size: 15px; transition: transform 0.2s, box-shadow 0.2s; }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(6,182,212,0.3); }
-    .btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: transparent; color: #F1F5F9; font-weight: 600; border-radius: 12px; border: 1px solid #334155; cursor: pointer; font-size: 15px; transition: border-color 0.2s; }
-    .btn-secondary:hover { border-color: #06B6D4; }
-    section { padding: 80px 0; }
-    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
-    /* Header */
-    header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(2,6,23,0.8); backdrop-filter: blur(16px); border-bottom: 1px solid #334155; }
-    header .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-    .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-icon { width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-    .logo-icon svg { width: 18px; height: 18px; color: white; }
-    .logo-text { font-size: 20px; font-weight: 700; color: white; }
-    nav { display: flex; align-items: center; gap: 32px; }
-    nav a { font-size: 14px; color: #94A3B8; font-weight: 500; transition: color 0.2s; }
-    nav a:hover { color: white; }
-    /* Hero */
-    .hero { padding: 140px 0 100px; text-align: center; position: relative; overflow: hidden; }
-    .hero::before { content: ''; position: absolute; top: -50%; left: -20%; width: 140%; height: 200%; background: radial-gradient(ellipse at center, rgba(6,182,212,0.08), transparent 60%); pointer-events: none; }
-    .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); border-radius: 100px; font-size: 13px; color: #22D3EE; font-weight: 500; margin-bottom: 32px; }
-    .hero h1 { font-size: 56px; font-weight: 800; line-height: 1.1; margin-bottom: 20px; letter-spacing: -0.02em; }
-    .hero p { font-size: 18px; color: #94A3B8; max-width: 560px; margin: 0 auto 40px; line-height: 1.6; }
-    .hero-ctas { display: flex; gap: 12px; justify-content: center; margin-bottom: 48px; }
-    .hero-stats { display: flex; justify-content: center; gap: 64px; padding-top: 48px; border-top: 1px solid #334155; }
-    .hero-stat p { font-size: 32px; font-weight: 800; }
-    .hero-stat span { font-size: 13px; color: #94A3B8; }
-    /* Features */
-    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .feature-card { background: #0F172A; border: 1px solid #334155; border-radius: 16px; padding: 32px; transition: border-color 0.3s, box-shadow 0.3s; }
-    .feature-card:hover { border-color: rgba(6,182,212,0.3); box-shadow: 0 0 24px rgba(6,182,212,0.08); }
-    .feature-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-    .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: white; }
-    .feature-card p { font-size: 14px; color: #94A3B8; line-height: 1.6; }
-    /* Pricing */
-    .pricing-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-    .pricing-card { background: #0F172A; border: 1px solid #334155; border-radius: 16px; padding: 32px; text-align: center; position: relative; transition: border-color 0.3s; }
-    .pricing-card.popular { border-color: #06B6D4; }
-    .pricing-card.popular::before { content: 'MOST POPULAR'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 4px 12px; background: linear-gradient(135deg, #06B6D4, #8B5CF6); color: white; font-size: 10px; font-weight: 700; border-radius: 100px; letter-spacing: 0.05em; }
-    .pricing-card h3 { font-size: 15px; font-weight: 600; color: #94A3B8; margin-bottom: 12px; }
-    .pricing-card .price { font-size: 40px; font-weight: 800; color: white; margin-bottom: 4px; }
-    .pricing-card .period { font-size: 13px; color: #64748B; margin-bottom: 24px; }
-    .pricing-card ul { list-style: none; text-align: left; margin-bottom: 24px; }
-    .pricing-card li { font-size: 13px; color: #94A3B8; padding: 8px 0; border-bottom: 1px solid #1E293B; display: flex; align-items: center; gap: 8px; }
-    .pricing-card li::before { content: '✓'; color: #10B981; font-weight: 700; }
-    .pricing-card .btn-primary, .pricing-card .btn-secondary { width: 100%; justify-content: center; }
-    /* Testimonials */
-    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .testimonial-card { background: #0F172A; border: 1px solid #334155; border-radius: 16px; padding: 28px; }
-    .testimonial-card p { font-size: 14px; color: #CBD5E1; line-height: 1.7; margin-bottom: 20px; font-style: italic; }
-    .testimonial-author { display: flex; align-items: center; gap: 12px; }
-    .testimonial-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: white; }
-    .testimonial-name { font-size: 14px; font-weight: 600; color: white; }
-    .testimonial-role { font-size: 12px; color: #64748B; }
-    .testimonial-stat { font-size: 12px; color: #10B981; font-weight: 600; margin-top: 4px; }
-    /* FAQ */
-    .faq-item { border-bottom: 1px solid #334155; padding: 24px 0; }
-    .faq-item h3 { font-size: 15px; font-weight: 600; color: white; margin-bottom: 8px; }
-    .faq-item p { font-size: 14px; color: #94A3B8; line-height: 1.6; }
-    /* CTA */
-    .cta-section { text-align: center; padding: 100px 0; background: radial-gradient(ellipse at center, rgba(6,182,212,0.06), transparent 70%); }
-    /* Footer */
-    footer { border-top: 1px solid #334155; padding: 40px 0; text-align: center; }
-    footer p { font-size: 13px; color: #64748B; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif; background: white; color: #1a1a1a; line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* NAVBAR */
+    .navbar { display: flex; align-items: center; justify-content: space-between; padding: 20px 48px; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; background: white; z-index: 100; }
+    .logo { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; text-decoration: none; color: #1a1a1a; }
+    .logo-icon { width: 28px; height: 28px; background: #06b6d4; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; }
+    .nav-links { display: flex; gap: 32px; font-size: 14px; }
+    .nav-links a { color: #666; text-decoration: none; }
+    .nav-links a:hover { color: #1a1a1a; }
+    .nav-right { display: flex; gap: 16px; align-items: center; }
+    .btn-secondary { padding: 8px 16px; border: 1px solid #e5e5e5; border-radius: 6px; background: white; color: #1a1a1a; cursor: pointer; font-size: 14px; font-weight: 500; }
+    .btn-secondary:hover { background: #f5f5f5; }
+
+    /* HERO SECTION */
+    .hero { padding: 80px 48px; text-align: center; }
+    .hero-badge { display: inline-block; padding: 8px 16px; background: #f0f9ff; border: 1px solid #bfdbfe; border-radius: 24px; font-size: 13px; color: #0369a1; font-weight: 500; margin-bottom: 24px; }
+    .hero h1 { font-size: 48px; font-weight: 700; line-height: 1.2; margin-bottom: 20px; max-width: 800px; margin-left: auto; margin-right: auto; }
+    .hero h1 .highlight { color: #06b6d4; }
+    .hero p { font-size: 18px; color: #666; max-width: 600px; margin: 0 auto 40px; }
+    .hero-ctas { display: flex; gap: 16px; justify-content: center; }
+    .btn-primary { padding: 12px 28px; background: #06b6d4; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-primary:hover { background: #0891b2; }
+    .btn-secondary-alt { padding: 12px 28px; background: white; color: #1a1a1a; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn-secondary-alt:hover { background: #f5f5f5; }
+
+    /* SOCIAL PROOF */
+    .social-proof { text-align: center; padding: 40px 48px; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; }
+    .social-proof p { font-size: 14px; color: #666; }
+    .social-proof .number { font-size: 24px; font-weight: 700; color: #1a1a1a; margin-right: 8px; }
+
+    /* FEATURES SECTION */
+    .features { padding: 80px 48px; }
+    .features-header { text-align: center; margin-bottom: 60px; }
+    .features-header h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+    .features-header p { font-size: 16px; color: #666; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+    .feature-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+    .feature-card p { font-size: 14px; color: #666; }
+    .feature-number { font-size: 32px; font-weight: 700; color: #06b6d4; margin-bottom: 16px; }
+
+    /* PRODUCT SHOWCASE */
+    .product-section { padding: 80px 48px; background: #f9fafb; }
+    .product-header { text-align: center; margin-bottom: 60px; }
+    .product-header h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+    .product-header p { font-size: 16px; color: #666; }
+    .product-image { background: white; border: 1px solid #e5e5e5; border-radius: 12px; padding: 40px; text-align: center; color: #999; min-height: 400px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+    /* METRICS SECTION */
+    .metrics { padding: 80px 48px; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; text-align: center; }
+    .metric-value { font-size: 40px; font-weight: 700; color: #06b6d4; margin-bottom: 8px; }
+    .metric-label { font-size: 14px; color: #666; }
+
+    /* PRICING SECTION */
+    .pricing { padding: 80px 48px; background: #f9fafb; }
+    .pricing-header { text-align: center; margin-bottom: 60px; }
+    .pricing-header h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+    .pricing-header p { font-size: 16px; color: #666; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .pricing-card { background: white; border: 1px solid #e5e5e5; border-radius: 12px; padding: 40px; }
+    .pricing-card.popular { border: 2px solid #06b6d4; }
+    .popular-badge { display: inline-block; padding: 4px 12px; background: #f0f9ff; color: #0369a1; border-radius: 4px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+    .pricing-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+    .pricing-card .price { font-size: 32px; font-weight: 700; margin-bottom: 24px; }
+    .pricing-card .price span { font-size: 16px; color: #666; }
+    .pricing-card ul { list-style: none; margin-bottom: 24px; }
+    .pricing-card li { font-size: 14px; color: #666; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+    .pricing-card li:last-child { border-bottom: none; }
+    .pricing-card .btn { width: 100%; padding: 12px; border: 1px solid #e5e5e5; background: white; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .pricing-card .btn:hover { background: #f5f5f5; }
+    .pricing-card.popular .btn { background: #06b6d4; color: white; border-color: #06b6d4; }
+    .pricing-card.popular .btn:hover { background: #0891b2; }
+
+    /* CTA FOOTER */
+    .cta-footer { padding: 80px 48px; text-align: center; border-top: 1px solid #f0f0f0; }
+    .cta-footer h2 { font-size: 32px; font-weight: 700; margin-bottom: 24px; }
+    .cta-footer p { font-size: 16px; color: #666; margin-bottom: 32px; }
+
     @media (max-width: 768px) {
-      .hero h1 { font-size: 36px; }
-      .features-grid, .pricing-grid, .testimonials-grid { grid-template-columns: 1fr; }
-      .hero-stats { flex-direction: column; gap: 24px; }
-      nav { display: none; }
+      .navbar { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 48px 24px; }
+      .hero h1 { font-size: 32px; }
+      .features-grid, .pricing-grid { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <a href="#" class="logo">
-        <div class="logo-icon gradient-bg" style="border-radius:10px">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-        </div>
-        <span class="logo-text">PayFlow</span>
-      </a>
-      <nav>
-        <a href="#features">Features</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#">Docs</a>
-        <a href="#">Login</a>
-        <a href="#" class="btn-primary" style="padding:10px 20px;font-size:13px">Try Free for 14 Days</a>
-      </nav>
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <a href="#" class="logo">
+      <div class="logo-icon">⚡</div>
+      <span>PayFlow</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#">Docs</a>
     </div>
-  </header>
-
-  <section class="hero">
-    <div class="container">
-      <div class="hero-badge">⚡ Now with Autonomous Execution</div>
-      <h1>The operating system for<br><span class="gradient-text">payment operations</span></h1>
-      <p>Automate settlements, disputes, and refunds. Save 10+ hours per month and recover 25% more revenue.</p>
-      <div class="hero-ctas">
-        <button class="btn-primary">Start Free Trial →</button>
-        <button class="btn-secondary">Watch Demo</button>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><p class="gradient-text">2-5%</p><span>Average cost savings</span></div>
-        <div class="hero-stat"><p class="gradient-text">85%</p><span>Dispute win rate</span></div>
-        <div class="hero-stat"><p class="gradient-text">34h</p><span>Time saved per month</span></div>
-        <div class="hero-stat"><p class="gradient-text">500+</p><span>Payment teams</span></div>
-      </div>
+    <div class="nav-right">
+      <button class="btn-secondary">Sign in</button>
     </div>
-  </section>
+  </div>
 
-  <section id="features">
-    <div class="container">
-      <div style="text-align:center;margin-bottom:48px">
-        <h2 style="font-size:36px;font-weight:800;margin-bottom:12px">Stop monitoring.<br><span class="gradient-text">Start automating.</span></h2>
-        <p style="color:#94A3B8;max-width:480px;margin:0 auto">Three AI agents work 24/7 to optimize your payment operations autonomously.</p>
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">Now available for Razorpay, Stripe, and Wise</div>
+    <h1>The operating system<br>for <span class="highlight">payment operations</span></h1>
+    <p>Automate settlements, disputes, and refunds. Let your team focus on growth.</p>
+    <div class="hero-ctas">
+      <button class="btn-primary">Start free trial</button>
+      <button class="btn-secondary-alt">Watch 2-min demo</button>
+    </div>
+  </div>
+
+  <!-- SOCIAL PROOF -->
+  <div class="social-proof">
+    <p><span class="number">500+</span>payment teams use PayFlow to save 10+ hours/month</p>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="features" id="features">
+    <div class="features-header">
+      <h2>Everything you need</h2>
+      <p>Built for payment operations teams</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-number">1</div>
+        <h3>AutoSettle</h3>
+        <p>Route settlements through the optimal processor. Saves 2-5% on every transfer.</p>
       </div>
-      <div class="features-grid">
-        <div class="feature-card fade-in">
-          <div class="feature-icon" style="background:rgba(6,182,212,0.1)"><svg style="width:24px;height:24px;color:#06B6D4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg></div>
-          <h3>AutoSettle</h3>
-          <p>Automatically routes settlements through the optimal payment rail (NEFT/IMPS/RTGS) based on cost, speed, and reliability.</p>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon" style="background:rgba(139,92,246,0.1)"><svg style="width:24px;height:24px;color:#8B5CF6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
-          <h3>Dispute Autopilot</h3>
-          <p>Auto-gathers evidence, scores completeness, predicts win probability, and submits claims when confidence exceeds 80%.</p>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon" style="background:rgba(16,185,129,0.1)"><svg style="width:24px;height:24px;color:#10B981" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg></div>
-          <h3>Smart Refunds</h3>
-          <p>Routes refunds through the cheapest payment path automatically, saving 1-3% on every refund processed.</p>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon" style="background:rgba(245,158,11,0.1)"><svg style="width:24px;height:24px;color:#F59E0B" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
-          <h3>Unified View</h3>
-          <p>One dashboard for Razorpay, Stripe, and Wise. Cross-processor reconciliation in real-time.</p>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon" style="background:rgba(6,182,212,0.1)"><svg style="width:24px;height:24px;color:#06B6D4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg></div>
-          <h3>Real-time Alerts</h3>
-          <p>Instant Slack, Teams, and email notifications. Never miss a settlement delay or dispute deadline.</p>
-        </div>
-        <div class="feature-card fade-in">
-          <div class="feature-icon" style="background:rgba(139,92,246,0.1)"><svg style="width:24px;height:24px;color:#8B5CF6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg></div>
-          <h3>API & Webhooks</h3>
-          <p>Full REST API for custom workflows. Webhooks for real-time event streaming. Build anything on PayFlow.</p>
-        </div>
+      <div class="feature-card">
+        <div class="feature-number">2</div>
+        <h3>Dispute Autopilot</h3>
+        <p>Auto-gather evidence and submit claims. Increase win rate from 60% to 85%.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-number">3</div>
+        <h3>Smart Refunds</h3>
+        <p>Route refunds through the cheapest path. Save 1-3% on refund costs.</p>
       </div>
     </div>
-  </section>
+  </div>
 
-  <section id="pricing" style="background:#0F172A">
-    <div class="container">
-      <div style="text-align:center;margin-bottom:48px">
-        <h2 style="font-size:36px;font-weight:800;margin-bottom:12px">Simple, transparent pricing</h2>
-        <p style="color:#94A3B8">Start free. Scale as you grow.</p>
+  <!-- PRODUCT SHOWCASE -->
+  <div class="product-section">
+    <div class="product-header">
+      <h2>Designed for operators</h2>
+      <p>Real-time monitoring with autonomous execution</p>
+    </div>
+    <div class="product-image">
+      [Command center dashboard screenshot]
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metrics-grid">
+      <div class="metric">
+        <div class="metric-value">168h</div>
+        <div class="metric-label">Time saved per month</div>
       </div>
-      <div class="pricing-grid">
-        <div class="pricing-card">
-          <h3>Free</h3>
-          <div class="price">$0</div>
-          <div class="period">forever</div>
-          <ul>
-            <li>Up to $10K settlements</li>
-            <li>Basic dashboard</li>
-            <li>Manual mode</li>
-            <li>1 processor</li>
-          </ul>
-          <button class="btn-secondary">Get Started</button>
-        </div>
-        <div class="pricing-card">
-          <h3>Starter</h3>
-          <div class="price">$99</div>
-          <div class="period">per month</div>
-          <ul>
-            <li>Up to $500K settlements</li>
-            <li>AutoSettle enabled</li>
-            <li>Dispute Autopilot</li>
-            <li>1 processor</li>
-          </ul>
-          <button class="btn-secondary">Start Free Trial</button>
-        </div>
-        <div class="pricing-card popular">
-          <h3>Growth</h3>
-          <div class="price">$499</div>
-          <div class="period">per month</div>
-          <ul>
-            <li>Unlimited settlements</li>
-            <li>All automation features</li>
-            <li>Multi-processor</li>
-            <li>5 users + API access</li>
-          </ul>
-          <button class="btn-primary">Start Free Trial</button>
-        </div>
-        <div class="pricing-card">
-          <h3>Enterprise</h3>
-          <div class="price">Custom</div>
-          <div class="period">contact sales</div>
-          <ul>
-            <li>Unlimited everything</li>
-            <li>Multi-merchant</li>
-            <li>SLA guarantees</li>
-            <li>Dedicated support</li>
-          </ul>
-          <button class="btn-secondary">Contact Sales</button>
-        </div>
+      <div class="metric">
+        <div class="metric-value">₹124K</div>
+        <div class="metric-label">Cost reduced per month</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">85%</div>
+        <div class="metric-label">Dispute win rate</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">4</div>
+        <div class="metric-label">Processors supported</div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <section>
-    <div class="container">
-      <div style="text-align:center;margin-bottom:48px">
-        <h2 style="font-size:36px;font-weight:800;margin-bottom:12px">Trusted by payment teams</h2>
-      </div>
-      <div class="testimonials-grid">
-        <div class="testimonial-card fade-in">
-          <p>"PayFlow saved us 12 hours per week on settlement monitoring. The AutoSettle feature alone recovered 3% on our transaction costs."</p>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar gradient-bg">R</div>
-            <div>
-              <div class="testimonial-name">Rajesh Kumar</div>
-              <div class="testimonial-role">Head of Payments, QuickCommerce</div>
-              <div class="testimonial-stat">↑ 12 hours/week saved</div>
-            </div>
-          </div>
-        </div>
-        <div class="testimonial-card fade-in">
-          <p>"Our dispute win rate went from 45% to 85% with PayFlow's evidence autopilot. That's Rs 58,000 recovered last month alone."</p>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#8B5CF6,#A78BFA)">S</div>
-            <div>
-              <div class="testimonial-name">Sneha Patel</div>
-              <div class="testimonial-role">Finance Lead, CloudBazaar</div>
-              <div class="testimonial-stat">↑ 89% win rate improvement</div>
-            </div>
-          </div>
-        </div>
-        <div class="testimonial-card fade-in">
-          <p>"The multi-processor view changed everything. We manage Razorpay and Stripe from one dashboard. No more switching between 5 tabs."</p>
-          <div class="testimonial-author">
-            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#10B981,#34D399)">A</div>
-            <div>
-              <div class="testimonial-name">Amit Singh</div>
-              <div class="testimonial-role">CTO, FreshBasket</div>
-              <div class="testimonial-stat">↑ 3x faster operations</div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- PRICING -->
+  <div class="pricing" id="pricing">
+    <div class="pricing-header">
+      <h2>Simple pricing</h2>
+      <p>No hidden fees. Cancel anytime.</p>
     </div>
-  </section>
-
-  <section>
-    <div class="container" style="max-width:720px">
-      <div style="text-align:center;margin-bottom:40px">
-        <h2 style="font-size:36px;font-weight:800">Frequently asked questions</h2>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <h3>Starter</h3>
+        <div class="price">$99<span>/month</span></div>
+        <ul>
+          <li>Up to $500K settlements</li>
+          <li>AutoSettle enabled</li>
+          <li>Dispute autopilot</li>
+          <li>1 processor</li>
+          <li>1 user</li>
+        </ul>
+        <button class="btn">Start trial</button>
       </div>
-      <div class="faq-item"><h3>How does AutoSettle work?</h3><p>PayFlow analyzes settlement routes in real-time, comparing NEFT, IMPS, and RTGS on cost, speed, and success rate. It automatically selects the optimal route and executes the transfer. Average savings: 2-5% per settlement.</p></div>
-      <div class="faq-item"><h3>Which processors do you support?</h3><p>We currently support Razorpay, Stripe, and Wise. More processors coming soon. Our unified API normalizes data across all processors.</p></div>
-      <div class="faq-item"><h3>Is my payment data secure?</h3><p>Yes. We use bank-grade encryption, are PCI DSS compliant, and never store card details. All data is encrypted at rest and in transit.</p></div>
-      <div class="faq-item"><h3>Can I try before I buy?</h3><p>Absolutely. Our Free tier gives you full access to the dashboard. The 14-day trial includes all automation features.</p></div>
-      <div class="faq-item"><h3>What's the ROI?</h3><p>Most merchants see 2-5% cost savings on settlements and 25% more disputes won. That's typically 10x the subscription cost in month one.</p></div>
-      <div class="faq-item"><h3>How long does setup take?</h3><p>5 minutes. Connect your processor API keys, enable autopilot, and PayFlow starts working immediately.</p></div>
-    </div>
-  </section>
-
-  <section class="cta-section">
-    <div class="container" style="text-align:center">
-      <h2 style="font-size:40px;font-weight:800;margin-bottom:16px">Ready to <span class="gradient-text">automate</span>?</h2>
-      <p style="color:#94A3B8;margin-bottom:32px;font-size:16px">Join 500+ payment teams saving hours every week.</p>
-      <div style="display:flex;gap:12px;justify-content:center">
-        <button class="btn-primary" style="font-size:16px;padding:16px 32px">Try Free for 14 Days →</button>
+      <div class="pricing-card popular">
+        <div class="popular-badge">Most popular</div>
+        <h3>Growth</h3>
+        <div class="price">$499<span>/month</span></div>
+        <ul>
+          <li>Unlimited settlements</li>
+          <li>All automations</li>
+          <li>4 processors</li>
+          <li>5 users</li>
+          <li>API access</li>
+        </ul>
+        <button class="btn">Start trial</button>
+      </div>
+      <div class="pricing-card">
+        <h3>Enterprise</h3>
+        <div class="price">Custom</div>
+        <ul>
+          <li>Everything in Growth</li>
+          <li>Multi-merchant dashboard</li>
+          <li>SLA guarantees</li>
+          <li>Dedicated support</li>
+          <li>Custom integrations</li>
+        </ul>
+        <button class="btn">Contact sales</button>
       </div>
     </div>
-  </section>
+  </div>
 
-  <footer>
-    <div class="container">
-      <p>© 2026 PayFlow. The operating system for payment operations.</p>
-    </div>
-  </footer>
-
-  <script>
-    // Scroll animations
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-  </script>
+  <!-- CTA FOOTER -->
+  <div class="cta-footer">
+    <h2>Ready to automate?</h2>
+    <p>Join 500+ payment teams saving 10+ hours per month</p>
+    <button class="btn-primary" style="padding: 14px 32px; font-size: 16px;">Start free trial →</button>
+  </div>
 </body>
 </html>
