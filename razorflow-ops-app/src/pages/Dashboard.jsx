@@ -10,7 +10,7 @@ import ErrorDisplay from '../components/ErrorDisplay';
 import useStore from '../store/useStore';
 
 export default function Dashboard() {
-  const { dashboard, connected, loading, error, loadDashboard } = useStore();
+  const { dashboard, connected, demoMode, loading, error, loadDashboard } = useStore();
 
   const loadData = useCallback(() => {
     loadDashboard();
@@ -39,8 +39,21 @@ export default function Dashboard() {
 
   return (
     <>
-      <Navbar connected={connected} />
+      <Navbar connected={connected} demoMode={demoMode} />
       <div className="max-w-7xl mx-auto px-8 py-10">
+        {demoMode && (
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3">
+            <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-amber-800">Demo Mode — Backend not connected</p>
+              <p className="text-xs text-amber-600">Showing sample data. Deploy the backend to see live monitoring.</p>
+            </div>
+          </div>
+        )}
         {/* Header */}
         <div className="flex items-start justify-between mb-10">
           <div>

@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 
-export default function Navbar({ connected = true }) {
+export default function Navbar({ connected = true, demoMode = false }) {
   const location = useLocation();
 
   const navLinks = [
@@ -39,9 +39,16 @@ export default function Navbar({ connected = true }) {
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-500'}`} />
-            <span className="text-sm text-gray-600">
-              {connected ? 'Connected' : 'Disconnected'}
-            </span>
+            {demoMode ? (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 border border-amber-200 rounded text-xs font-medium text-amber-700">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                Demo Mode
+              </span>
+            ) : (
+              <span className="text-sm text-gray-600">
+                {connected ? 'Connected' : 'Disconnected'}
+              </span>
+            )}
           </div>
           <div className="h-6 w-px bg-gray-200" />
           <span className="text-sm text-gray-500">Merchant Portal</span>

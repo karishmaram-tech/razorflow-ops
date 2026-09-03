@@ -12,6 +12,7 @@ const useStore = create((set, get) => ({
   // State
   merchantApiKey: getMerchantApiKey(),
   connected: false,
+  demoMode: false,
   loading: false,
   error: null,
 
@@ -36,7 +37,8 @@ const useStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const data = await fetchDashboard();
-      set({ dashboard: data, connected: true, loading: false });
+      const isDemo = !!(data?._demo);
+      set({ dashboard: data, connected: true, demoMode: isDemo, loading: false });
       return data;
     } catch (err) {
       set({ connected: false, loading: false, error: err.message });
