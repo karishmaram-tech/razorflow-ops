@@ -57,13 +57,33 @@ function formatAnomalyType(type) {
 }
 
 function getLinkPath(issue) {
-  if (issue.settlement_id) return `/settlement/${issue.settlement_id}`;
-  if (issue.refund_id) return `/refund/${issue.refund_id}`;
-  if (issue.dispute_id) return `/dispute/${issue.dispute_id}`;
+  const id = issue.settlement_id || issue.refund_id || issue.dispute_id ||
+    issue.related_settlement_id || issue.related_refund_id || issue.related_dispute_id;
+  if (!id) return '#';
+  if (issue.related_settlement_id || issue.settlement_id) return `/settlement/${id}`;
+  if (issue.related_refund_id || issue.refund_id) return `/refund/${id}`;
+  if (issue.related_dispute_id || issue.dispute_id) return `/dispute/${id}`;
   return '#';
 }
 
-export default function IssuesTable({ issues = [] }) {
+export default function IssuesTable({ issues = [], maxRows = 20 }) {
+  // Normalize field names: API returns 'type' but component uses 'anomaly_type'
+  const normalized = issues.map(issue => ({
+    ...issue,
+    anomaly_type: issue.anomaly_type || issue.type,
+    details: issue.details || issue.recommended_action || '',
+  }));
+  // Deduplicate: group by type + severity, take the first of each
+  const seen = new Set();
+  const unique = normalized.filter((issue) => {
+    const key = `${issue.anomaly_type}-${issue.severity}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const displayIssues = unique.slice(0, maxRows);
+  const totalCount = unique.length;
+
   if (!issues.length) {
     return (
       <div className="card p-12 text-center">
@@ -78,7 +98,8 @@ export default function IssuesTable({ issues = [] }) {
 
   return (
     <div className="card overflow-hidden">
-      <table className="w-full">
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[700px]">
         <thead className="bg-gray-50 border-b border-gray-200">
           <tr>
             <th className="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -99,7 +120,7 @@ export default function IssuesTable({ issues = [] }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
-          {issues.map((issue, idx) => (
+          {displayIssues.map((issue, idx) => (
             <tr key={issue.id || idx} className="hover:bg-gray-50 transition-colors">
               <td className="px-6 py-4">
                 <div className="flex items-center gap-3">
@@ -114,8 +135,8 @@ export default function IssuesTable({ issues = [] }) {
                     <p className="font-semibold text-gray-900 text-sm">
                       {formatAnomalyType(issue.anomaly_type || issue.type)}
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {issue.anomaly_id ? `#${issue.anomaly_id.slice(0, 8)}` : ''}
+                    <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                      {issue.details || (issue.anomaly_id ? `#${issue.anomaly_id.slice(0, 8)}` : '')}
                     </p>
                   </div>
                 </div>
@@ -147,11 +168,18 @@ export default function IssuesTable({ issues = [] }) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
-              </td>
-            </tr>
+              </td>              </tr>
           ))}
         </tbody>
       </table>
+      </div>
+      {totalCount > maxRows && (
+        <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 text-center">
+          <p className="text-sm text-gray-500">
+            Showing {maxRows} of {totalCount} unique issues. {totalCount - maxRows} more not shown.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
