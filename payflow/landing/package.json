@@ -1,0 +1,7 @@
+{
+  "name": "payflow-landing",
+  "private": true,
+  "scripts": {
+    "build": "cp -r . ../frontend/dist/ 2>/dev/null || true"
+  }
+}
