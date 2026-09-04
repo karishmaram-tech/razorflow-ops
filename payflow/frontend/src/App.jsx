@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import PremiumSidebar from './components/premium/Sidebar';
+import LightSidebar from './components/light/Sidebar';
+import LightDashboard from './pages/LightDashboard';
 import PremiumDashboard from './pages/PremiumDashboard';
 import Dashboard from './pages/Dashboard';
 import AutomationDetail from './pages/AutomationDetail';
@@ -9,11 +10,12 @@ import SoftUIDashboard from './pages/SoftUIDashboard';
 
 function AppLayout() {
   return (
-    <div className="flex min-h-screen" style={{ background: 'var(--pf-bg)' }}>
-      <PremiumSidebar />
+    <div className="flex min-h-screen" style={{ background: 'var(--bg-page)' }}>
+      <LightSidebar />
       <main className="flex-1 overflow-auto">
         <Routes>
-          <Route path="/" element={<PremiumDashboard />} />
+          <Route path="/" element={<LightDashboard />} />
+          <Route path="/dark" element={<PremiumDashboard />} />
           <Route path="/classic" element={<Dashboard />} />
           <Route path="/automations/:id" element={<AutomationDetail />} />
           <Route path="/settings" element={<Settings />} />
@@ -26,7 +28,7 @@ function AppLayout() {
 
 function MobileLayout() {
   return (
-    <div className="max-w-md mx-auto min-h-screen border-x" style={{ background: 'var(--pf-bg)', borderColor: 'var(--pf-border)' }}>
+    <div className="max-w-md mx-auto min-h-screen" style={{ background: 'var(--bg-page)', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)' }}>
       <Routes>
         <Route path="/" element={<FintechMobile />} />
       </Routes>
