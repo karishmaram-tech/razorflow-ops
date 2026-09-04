@@ -5,6 +5,8 @@ import {
   ChevronRight, Sparkles, Shield, Zap
 } from 'lucide-react';
 import Text3DFlip from '../components/magicui/text-3d-flip';
+import AnimatedCircularProgressBar from '../components/magicui/animated-circular-progress-bar';
+import { AnimatedList } from '../components/magicui/animated-list';
 
 const TRANSACTIONS = [
   { id: 1, title: 'Settlement NEFT', subtitle: 'Auto-routed by PayFlow', amount: '+₹12,400', type: 'credit', time: '2 min ago', icon: '⚡' },
@@ -96,6 +98,37 @@ function BalanceCard() {
   );
 }
 
+function OptimizationGauge() {
+  const [value, setValue] = useState(0);
+  
+  useState(() => {
+    const handleIncrement = (prev) => (prev === 100 ? 0 : prev + 10);
+    setValue(handleIncrement);
+    const interval = setInterval(() => setValue(handleIncrement), 2000);
+    return () => clearInterval(interval);
+  });
+
+  return (
+    <div className="mx-4 mb-6 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-card)] p-5 flex items-center gap-5">
+      <AnimatedCircularProgressBar
+        value={value}
+        gaugePrimaryColor="rgb(6, 182, 212)"
+        gaugeSecondaryColor="rgba(148, 163, 184, 0.1)"
+        size={100}
+        strokeWidth={8}
+      />
+      <div>
+        <p className="text-sm font-semibold text-white">Optimization Score</p>
+        <p className="text-xs text-slate-500 mt-1">PayFlow is actively optimizing your operations</p>
+        <div className="flex items-center gap-2 mt-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" style={{ animation: 'pulse 2s infinite' }} />
+          <span className="text-[11px] text-cyan-400 font-medium">Live</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AssetAllocation() {
   const total = ASSETS.reduce((sum, a) => sum + a.value, 0);
   
@@ -177,28 +210,29 @@ function Transactions() {
         </button>
       </div>
       
-      {TRANSACTIONS.map((tx, i) => (
-        <div key={tx.id} className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--border-subtle)] last:border-b-0 hover:bg-white/[0.02] transition-colors"
-          style={{ animation: `slideInRight 0.4s ease-out ${i * 0.05}s backwards` }}>
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-base ${
-              tx.type === 'credit' ? 'bg-emerald-500/10' : 'bg-red-500/10'
-            }`}>
-              {tx.icon}
+      <AnimatedList className="px-1 py-1" delay={200}>
+        {TRANSACTIONS.map((tx) => (
+          <div key={tx.id} className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--border-subtle)] last:border-b-0 hover:bg-white/[0.02] transition-colors">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-base ${
+                tx.type === 'credit' ? 'bg-emerald-500/10' : 'bg-red-500/10'
+              }`}>
+                {tx.icon}
+              </div>
+              <div>
+                <p className="text-sm font-medium text-slate-200">{tx.title}</p>
+                <p className="text-[11px] text-slate-500 mt-0.5">{tx.subtitle}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium text-slate-200">{tx.title}</p>
-              <p className="text-[11px] text-slate-500 mt-0.5">{tx.subtitle}</p>
+            <div className="text-right">
+              <p className={`text-sm font-semibold ${tx.type === 'credit' ? 'text-emerald-400' : 'text-red-400'}`}>
+                {tx.amount}
+              </p>
+              <p className="text-[10px] text-slate-600 mt-0.5">{tx.time}</p>
             </div>
           </div>
-          <div className="text-right">
-            <p className={`text-sm font-semibold ${tx.type === 'credit' ? 'text-emerald-400' : 'text-red-400'}`}>
-              {tx.amount}
-            </p>
-            <p className="text-[10px] text-slate-600 mt-0.5">{tx.time}</p>
-          </div>
-        </div>
-      ))}
+        ))}
+      </AnimatedList>
     </div>
   );
 }
@@ -264,6 +298,7 @@ export default function FintechMobile() {
       <div className="py-4 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 64px)' }}>
         <BalanceCard />
         <StatsRow />
+        <OptimizationGauge />
         <AssetAllocation />
         <SpendingChart />
         <Transactions />
