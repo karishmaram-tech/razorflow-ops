@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
+import PremiumSidebar from './components/premium/Sidebar';
+import PremiumDashboard from './pages/PremiumDashboard';
 import Dashboard from './pages/Dashboard';
 import AutomationDetail from './pages/AutomationDetail';
 import Settings from './pages/Settings';
@@ -8,13 +9,15 @@ import SoftUIDashboard from './pages/SoftUIDashboard';
 
 function AppLayout() {
   return (
-    <div className="flex min-h-screen bg-[var(--bg-dark)]">
-      <Sidebar />
+    <div className="flex min-h-screen" style={{ background: 'var(--pf-bg)' }}>
+      <PremiumSidebar />
       <main className="flex-1 overflow-auto">
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<PremiumDashboard />} />
+          <Route path="/classic" element={<Dashboard />} />
           <Route path="/automations/:id" element={<AutomationDetail />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/softui" element={<SoftUIDashboard />} />
         </Routes>
       </main>
     </div>
@@ -23,7 +26,7 @@ function AppLayout() {
 
 function MobileLayout() {
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-[var(--bg-dark)] border-x border-[var(--border-subtle)]">
+    <div className="max-w-md mx-auto min-h-screen border-x" style={{ background: 'var(--pf-bg)', borderColor: 'var(--pf-border)' }}>
       <Routes>
         <Route path="/" element={<FintechMobile />} />
       </Routes>
@@ -36,7 +39,6 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/mobile/*" element={<MobileLayout />} />
-        <Route path="/softui" element={<SoftUIDashboard />} />
         <Route path="/*" element={<AppLayout />} />
       </Routes>
     </BrowserRouter>

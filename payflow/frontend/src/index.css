@@ -1,26 +1,27 @@
 @import "tailwindcss";
+@import "./styles/premium.css";
 @import "./styles/design-system.css";
 
 @theme {
-  --color-border: rgba(148, 163, 184, 0.1);
-  --color-input: rgba(148, 163, 184, 0.2);
+  --color-border: rgba(148, 163, 184, 0.06);
+  --color-input: rgba(148, 163, 184, 0.12);
   --color-ring: #06b6d4;
-  --color-background: #0a0e27;
+  --color-background: #050a18;
   --color-foreground: #f1f5f9;
-  --color-card: #151b36;
+  --color-card: #0c1222;
   --color-card-foreground: #f1f5f9;
   --color-primary: #06b6d4;
   --color-primary-foreground: #f8fafc;
-  --color-secondary: #1a1f3a;
+  --color-secondary: #111a2e;
   --color-secondary-foreground: #f1f5f9;
-  --color-muted: #1a1f3a;
+  --color-muted: #111a2e;
   --color-muted-foreground: #94a3b8;
-  --color-accent: #1a1f3a;
+  --color-accent: #111a2e;
   --color-accent-foreground: #f1f5f9;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #f8fafc;
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
+  --radius-sm: 0.625rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.125rem;
+  --radius-xl: 1.5rem;
 }
