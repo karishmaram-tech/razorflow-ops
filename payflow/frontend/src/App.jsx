@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
 import AutomationDetail from './pages/AutomationDetail';
 import Settings from './pages/Settings';
+import FintechMobile from './pages/FintechMobile';
 
 function AppLayout() {
   return (
@@ -19,10 +20,23 @@ function AppLayout() {
   );
 }
 
+function MobileLayout() {
+  return (
+    <div className="max-w-md mx-auto min-h-screen bg-[var(--bg-dark)] border-x border-[var(--border-subtle)]">
+      <Routes>
+        <Route path="/" element={<FintechMobile />} />
+      </Routes>
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      <AppLayout />
+      <Routes>
+        <Route path="/mobile/*" element={<MobileLayout />} />
+        <Route path="/*" element={<AppLayout />} />
+      </Routes>
     </BrowserRouter>
   );
 }
