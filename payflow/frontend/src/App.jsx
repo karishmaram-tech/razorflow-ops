@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import AutomationDetail from './pages/AutomationDetail';
 import Settings from './pages/Settings';
 import FintechMobile from './pages/FintechMobile';
+import SoftUIDashboard from './pages/SoftUIDashboard';
 
 function AppLayout() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/mobile/*" element={<MobileLayout />} />
+        <Route path="/softui" element={<SoftUIDashboard />} />
         <Route path="/*" element={<AppLayout />} />
       </Routes>
     </BrowserRouter>
