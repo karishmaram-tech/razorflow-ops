@@ -4,6 +4,7 @@ import {
   CreditCard, Send, Receipt, BarChart3, Eye, EyeOff,
   ChevronRight, Sparkles, Shield, Zap
 } from 'lucide-react';
+import Text3DFlip from '../components/magicui/text-3d-flip';
 
 const TRANSACTIONS = [
   { id: 1, title: 'Settlement NEFT', subtitle: 'Auto-routed by PayFlow', amount: '+₹12,400', type: 'credit', time: '2 min ago', icon: '⚡' },
@@ -57,9 +58,21 @@ function BalanceCard() {
         </div>
         
         <div className="mb-6">
-          <p className="text-4xl font-bold text-white tracking-tight" style={{ animation: 'fadeInUp 0.6s ease-out' }}>
-            {showBalance ? '₹3,43,800' : '••••••••'}
-          </p>
+          {showBalance ? (
+            <Text3DFlip
+              className="text-4xl font-bold text-white tracking-tight"
+              textClassName="text-4xl font-bold text-white tracking-tight"
+              flipTextClassName="text-4xl font-bold text-white tracking-tight"
+              rotateDirection="top"
+              staggerDuration={0.02}
+              staggerFrom="first"
+              transition={{ type: 'spring', damping: 20, stiffness: 150 }}
+            >
+              ₹3,43,800
+            </Text3DFlip>
+          ) : (
+            <p className="text-4xl font-bold text-white tracking-tight">••••••••</p>
+          )}
           <div className="flex items-center gap-2 mt-2">
             <TrendingUp className="w-3.5 h-3.5 text-emerald-300" />
             <span className="text-xs text-white/70">
@@ -222,7 +235,17 @@ export default function FintechMobile() {
               <Zap className="w-4 h-4 text-white" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white">PayFlow</p>
+              <Text3DFlip
+                className="text-sm font-bold text-white"
+                textClassName="text-sm font-bold text-white"
+                flipTextClassName="text-sm font-bold text-white"
+                rotateDirection="top"
+                staggerDuration={0.03}
+                staggerFrom="first"
+                transition={{ type: 'spring', damping: 25, stiffness: 160 }}
+              >
+                PayFlow
+              </Text3DFlip>
               <p className="text-[10px] text-slate-500">Wealth Manager</p>
             </div>
           </div>
