@@ -204,7 +204,7 @@ function Sidebar() {
         </div>
         <div>
           <span className="text-sm font-bold" style={{ color: neu.text }}>PayFlow</span>
-          <p className="text-[10px]" style={{ color: neu.muted }}>Soft UI</p>
+          <p className="text-[10px]" style={{ color: neu.muted }}>Command Center</p>
         </div>
       </div>
 
@@ -348,7 +348,7 @@ export default function SoftUIDashboard() {
             <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: neu.muted }}>
               Welcome back
             </p>
-            <h1 className="text-2xl font-bold" style={{ color: neu.text }}>Soft UI Dashboard</h1>
+            <h1 className="text-2xl font-bold" style={{ color: neu.text }}>Command Center</h1>
           </div>
           <div className="w-72">
             <NeuInput placeholder="Search..." icon={Search} />
