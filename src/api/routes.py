@@ -21,7 +21,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, WebSocket, WebSocketDisconnect
 from sqlalchemy import func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -557,6 +557,26 @@ async def get_automation_stats():
     """Return automation engine statistics."""
     engine = get_automation_engine()
     return engine.get_stats()
+
+
+@router.websocket("/ws/automations")
+async def websocket_automations(websocket: WebSocket):
+    """WebSocket for real-time automation updates."""
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_json()
+            if data.get("action") == "execute":
+                engine = get_automation_engine()
+                result = await engine.execute(data.get("type"), data.get("item_id"))
+                await websocket.send_json(result)
+    except WebSocketDisconnect:
+        pass
+    except Exception as e:
+        try:
+            await websocket.send_json({"error": str(e), "status": "failed"})
+        except Exception:
+            pass
 
 
 # ══════════════════════════════════════════════════════════════════════════════

@@ -35,32 +35,24 @@ const KPICard = ({ label, value, subtext }) => (
   </div>
 );
 
-const DEMO_AUTOMATIONS = [
-  {
-    type: 'auto_settle',
-    title: 'Settlement routed to NEFT',
-    description: 'Settlement #1847 — saved Rs 600 vs IMPS',
-    cost_saved: 600,
-  },
-  {
-    type: 'dispute_autopilot',
-    title: 'Dispute evidence submitted',
-    description: 'Dispute #2891 — win probability 92%',
-    cost_saved: 0,
-  },
-  {
-    type: 'smart_refund',
-    title: 'Refund routed to original payment',
-    description: 'Refund #4521 — saved 2% processing fee',
-    cost_saved: 150,
-  },
+const AUTOMATION_BUTTONS = [
+  { type: 'auto_settle', label: 'AutoSettle', icon: '⚡', color: 'bg-cyan-500 hover:bg-cyan-600' },
+  { type: 'dispute_autopilot', label: 'Dispute Autopilot', icon: '🛡️', color: 'bg-violet-500 hover:bg-violet-600' },
+  { type: 'smart_refund', label: 'Smart Refund', icon: '💰', color: 'bg-emerald-500 hover:bg-emerald-600' },
 ];
+
+const DEMO_AUTOMATIONS = {
+  auto_settle: { title: 'Settlement routed to NEFT', description: 'Settlement #1847 — saved Rs 600 vs IMPS', cost_saved: 600 },
+  dispute_autopilot: { title: 'Dispute evidence submitted', description: 'Dispute #2891 — win probability 92%', cost_saved: 0 },
+  smart_refund: { title: 'Refund routed to original payment', description: 'Refund #4521 — saved 2% processing fee', cost_saved: 150 },
+};
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { demoMode } = useStore();
-  const [isRunning, setIsRunning] = useState(false);
+  const [runningType, setRunningType] = useState(null);
   const [toast, setToast] = useState(null);
+  const [error, setError] = useState(null);
 
   const [activity, setActivity] = useState([
     { id: 1, title: 'Settlement routed to NEFT', description: 'Settlement #1847 — saved Rs 600 vs IMPS', cost_saved: 600, status: 'completed', time: '2 min ago', type: 'settlement' },
@@ -80,32 +72,33 @@ export default function Dashboard() {
     disputesWon: 9,
   });
 
-  const runDemo = useCallback(async () => {
-    if (isRunning) return;
-    setIsRunning(true);
+  const runAutomation = useCallback(async (type) => {
+    if (runningType) return;
+    setRunningType(type);
+    setError(null);
 
-    // Pick a random automation
-    const demo = DEMO_AUTOMATIONS[Math.floor(Math.random() * DEMO_AUTOMATIONS.length)];
-    const demoId = `demo_${Date.now()}`;
+    const demo = DEMO_AUTOMATIONS[type];
+    const demoId = `${type}_${Date.now()}`;
 
-    // Step 1: Add "running" entry
+    // Add "running" entry
     const runningEntry = {
       id: demoId,
-      title: demo.title,
-      description: `Running ${demo.type}...`,
+      title: `${demo.title}...`,
+      description: `Running ${type.replace('_', ' ')}...`,
       cost_saved: 0,
       status: 'in_progress',
       time: 'Now',
-      type: demo.type,
+      type,
     };
     setActivity(prev => [runningEntry, ...prev]);
 
-    // Step 2: Simulate execution steps
-    await new Promise(r => setTimeout(r, 1000));
+    // Simulate execution
+    await new Promise(r => setTimeout(r, 1200));
 
-    // Step 3: Complete
+    // Complete
     const completedEntry = {
       ...runningEntry,
+      title: demo.title,
       description: demo.description,
       cost_saved: demo.cost_saved,
       status: 'completed',
@@ -113,7 +106,7 @@ export default function Dashboard() {
     };
     setActivity(prev => prev.map(a => a.id === demoId ? completedEntry : a));
 
-    // Step 4: Update KPIs
+    // Update KPIs
     if (demo.cost_saved > 0) {
       setKpis(prev => ({
         ...prev,
@@ -122,14 +115,17 @@ export default function Dashboard() {
       }));
     }
 
-    // Step 5: Show toast
+    // Show toast
     if (demo.cost_saved > 0) {
-      setToast(`${demo.title} — saved Rs ${demo.cost_saved}`);
+      setToast(`✓ ${demo.title} — saved Rs ${demo.cost_saved}`);
+      setTimeout(() => setToast(null), 3000);
+    } else {
+      setToast(`✓ ${demo.title}`);
       setTimeout(() => setToast(null), 3000);
     }
 
-    setIsRunning(false);
-  }, [isRunning]);
+    setRunningType(null);
+  }, [runningType]);
 
   const handleActivityClick = (item) => {
     navigate(`/automations/${item.id}`, { state: { activity: item } });
@@ -140,7 +136,14 @@ export default function Dashboard() {
       {/* Toast */}
       {toast && (
         <div className="fixed top-4 right-4 z-50 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium">
-          ✓ {toast}
+          {toast}
+        </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <div className="fixed top-4 right-4 z-50 bg-red-600 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium">
+          ✗ {error}
         </div>
       )}
 
@@ -152,17 +155,6 @@ export default function Dashboard() {
             <p className="text-sm text-gray-500 mt-1">Monitor automation activity and performance</p>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={runDemo}
-              disabled={isRunning}
-              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
-                isRunning
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-cyan-500 text-white hover:bg-cyan-600'
-              }`}
-            >
-              {isRunning ? 'Running...' : 'Run Demo'}
-            </button>
             <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full">
               <div className="w-2 h-2 rounded-full bg-emerald-500" />
               <span className="text-xs font-medium text-gray-600">All systems operational</span>
@@ -199,6 +191,30 @@ export default function Dashboard() {
             value={`${kpis.disputesWon}/11`}
             subtext="85% win rate with automation"
           />
+        </div>
+
+        {/* Automation Buttons */}
+        <div className="mb-8">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Test Automations</p>
+          <div className="flex gap-3">
+            {AUTOMATION_BUTTONS.map((btn) => (
+              <button
+                key={btn.type}
+                onClick={() => runAutomation(btn.type)}
+                disabled={runningType !== null}
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white rounded-lg transition-colors ${
+                  runningType === btn.type
+                    ? 'bg-gray-300 cursor-wait'
+                    : runningType !== null
+                    ? 'bg-gray-200 cursor-not-allowed'
+                    : btn.color
+                }`}
+              >
+                <span>{btn.icon}</span>
+                <span>{runningType === btn.type ? 'Running...' : btn.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Activity Feed */}
