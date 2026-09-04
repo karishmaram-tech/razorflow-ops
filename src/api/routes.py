@@ -57,6 +57,7 @@ from src.api.schemas import (
     SettlementDetailResponse,
 )
 from src.config import settings
+from src.core.automation import get_automation_engine
 from src.data.database import get_db_session, get_sync_session
 from src.data.models import (
     Anomaly,
@@ -476,6 +477,86 @@ async def get_metrics(
         anomalies_total=total,
         anomalies_resolved=resolved,
     )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Automation endpoints
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+@router.post(
+    "/automations/execute",
+    summary="Execute an automation",
+)
+async def execute_automation(
+    automation_type: str,
+    item_id: str,
+):
+    """Execute an automation immediately and return results."""
+    engine = get_automation_engine()
+    result = await engine.execute(automation_type, item_id)
+    return result
+
+
+@router.get(
+    "/automations/activity",
+    summary="Get recent automation activity",
+)
+async def get_automation_activity(
+    limit: int = 20,
+):
+    """Return recent automation executions."""
+    # Generate demo activity feed
+    from datetime import timedelta
+
+    now = datetime.now(timezone.utc)
+    types = ["auto_settle", "dispute_autopilot", "smart_refund"]
+    titles = [
+        "Settlement routed to NEFT",
+        "Dispute evidence submitted",
+        "Refund routed to original payment",
+        "Settlement route optimized",
+        "Dispute evidence gathering",
+        "Settlement batch processed",
+        "Refund routing analyzed",
+        "Chargeback prevention alert",
+    ]
+    descriptions = [
+        "Settlement #1847 — saved Rs 600 vs IMPS",
+        "Dispute #2891 — win probability 92%",
+        "Refund #4521 — saved 2% processing fee",
+        "Settlement #1846 — RTGS selected for Rs 50K+",
+        "Dispute #2895 — collecting transaction records",
+        "Batch #89 — 12 settlements, 11 routed optimally",
+        "Refund #4522 — wallet route selected",
+        "Order #9823 — flagged for review",
+    ]
+    costs = [600, 0, 150, 1200, 0, 3200, 85, 0]
+    statuses = ["completed", "completed", "completed", "completed", "in_progress", "completed", "completed", "in_progress"]
+    times = ["2 min ago", "8 min ago", "15 min ago", "22 min ago", "Now", "1 hr ago", "1 hr ago", "2 hr ago"]
+
+    return [
+        {
+            "id": i + 1,
+            "type": types[i % 3],
+            "title": titles[i],
+            "description": descriptions[i],
+            "cost_saved": costs[i],
+            "status": statuses[i],
+            "time": times[i],
+        }
+        for i in range(min(limit, len(titles)))
+    ]
+
+
+@router.get(
+    "/automations/stats",
+    summary="Get automation statistics",
+)
+async def get_automation_stats():
+    """Return automation engine statistics."""
+    engine = get_automation_engine()
+    return engine.get_stats()
 
 
 # ══════════════════════════════════════════════════════════════════════════════

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../store/useStore';
 
@@ -10,7 +10,7 @@ const ActivityRow = ({ activity, onClick }) => (
     <div className="flex items-center gap-3">
       <div className={`w-2 h-2 rounded-full ${
         activity.status === 'completed' ? 'bg-emerald-500' :
-        activity.status === 'in_progress' ? 'bg-amber-500' :
+        activity.status === 'in_progress' ? 'bg-amber-500 animate-pulse' :
         'bg-gray-300'
       }`} />
       <div>
@@ -35,11 +35,34 @@ const KPICard = ({ label, value, subtext }) => (
   </div>
 );
 
+const DEMO_AUTOMATIONS = [
+  {
+    type: 'auto_settle',
+    title: 'Settlement routed to NEFT',
+    description: 'Settlement #1847 — saved Rs 600 vs IMPS',
+    cost_saved: 600,
+  },
+  {
+    type: 'dispute_autopilot',
+    title: 'Dispute evidence submitted',
+    description: 'Dispute #2891 — win probability 92%',
+    cost_saved: 0,
+  },
+  {
+    type: 'smart_refund',
+    title: 'Refund routed to original payment',
+    description: 'Refund #4521 — saved 2% processing fee',
+    cost_saved: 150,
+  },
+];
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { demoMode } = useStore();
+  const [isRunning, setIsRunning] = useState(false);
+  const [toast, setToast] = useState(null);
 
-  const [activity] = useState([
+  const [activity, setActivity] = useState([
     { id: 1, title: 'Settlement routed to NEFT', description: 'Settlement #1847 — saved Rs 600 vs IMPS', cost_saved: 600, status: 'completed', time: '2 min ago', type: 'settlement' },
     { id: 2, title: 'Dispute evidence submitted', description: 'Dispute #2891 — win probability 92%', cost_saved: 0, status: 'completed', time: '8 min ago', type: 'dispute' },
     { id: 3, title: 'Refund routed to original payment', description: 'Refund #4521 — saved 2% processing fee', cost_saved: 150, status: 'completed', time: '15 min ago', type: 'refund' },
@@ -50,12 +73,77 @@ export default function Dashboard() {
     { id: 8, title: 'Chargeback prevention alert', description: 'Order #9823 — flagged for review', cost_saved: 0, status: 'in_progress', time: '2 hr ago', type: 'dispute' },
   ]);
 
+  const [kpis, setKpis] = useState({
+    automations: 487,
+    costSaved: 43100,
+    timeSaved: 34.5,
+    disputesWon: 9,
+  });
+
+  const runDemo = useCallback(async () => {
+    if (isRunning) return;
+    setIsRunning(true);
+
+    // Pick a random automation
+    const demo = DEMO_AUTOMATIONS[Math.floor(Math.random() * DEMO_AUTOMATIONS.length)];
+    const demoId = `demo_${Date.now()}`;
+
+    // Step 1: Add "running" entry
+    const runningEntry = {
+      id: demoId,
+      title: demo.title,
+      description: `Running ${demo.type}...`,
+      cost_saved: 0,
+      status: 'in_progress',
+      time: 'Now',
+      type: demo.type,
+    };
+    setActivity(prev => [runningEntry, ...prev]);
+
+    // Step 2: Simulate execution steps
+    await new Promise(r => setTimeout(r, 1000));
+
+    // Step 3: Complete
+    const completedEntry = {
+      ...runningEntry,
+      description: demo.description,
+      cost_saved: demo.cost_saved,
+      status: 'completed',
+      time: 'Just now',
+    };
+    setActivity(prev => prev.map(a => a.id === demoId ? completedEntry : a));
+
+    // Step 4: Update KPIs
+    if (demo.cost_saved > 0) {
+      setKpis(prev => ({
+        ...prev,
+        automations: prev.automations + 1,
+        costSaved: prev.costSaved + demo.cost_saved,
+      }));
+    }
+
+    // Step 5: Show toast
+    if (demo.cost_saved > 0) {
+      setToast(`${demo.title} — saved Rs ${demo.cost_saved}`);
+      setTimeout(() => setToast(null), 3000);
+    }
+
+    setIsRunning(false);
+  }, [isRunning]);
+
   const handleActivityClick = (item) => {
     navigate(`/automations/${item.id}`, { state: { activity: item } });
   };
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Toast */}
+      {toast && (
+        <div className="fixed top-4 right-4 z-50 bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium">
+          ✓ {toast}
+        </div>
+      )}
+
       {/* Header */}
       <div className="border-b border-gray-200 px-8 py-6">
         <div className="flex items-center justify-between">
@@ -64,6 +152,17 @@ export default function Dashboard() {
             <p className="text-sm text-gray-500 mt-1">Monitor automation activity and performance</p>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={runDemo}
+              disabled={isRunning}
+              className={`px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
+                isRunning
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-cyan-500 text-white hover:bg-cyan-600'
+              }`}
+            >
+              {isRunning ? 'Running...' : 'Run Demo'}
+            </button>
             <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full">
               <div className="w-2 h-2 rounded-full bg-emerald-500" />
               <span className="text-xs font-medium text-gray-600">All systems operational</span>
@@ -82,22 +181,22 @@ export default function Dashboard() {
         <div className="grid grid-cols-4 gap-4 mb-8">
           <KPICard
             label="Automations This Month"
-            value="487"
+            value={kpis.automations.toLocaleString()}
             subtext="Settlements + disputes + refunds"
           />
           <KPICard
             label="Cost Saved"
-            value="Rs 43,100"
+            value={`Rs ${kpis.costSaved.toLocaleString('en-IN')}`}
             subtext="12% increase from last month"
           />
           <KPICard
             label="Time Saved"
-            value="34.5h"
+            value={`${kpis.timeSaved}h`}
             subtext="Manual tasks automated"
           />
           <KPICard
             label="Disputes Won"
-            value="9/11"
+            value={`${kpis.disputesWon}/11`}
             subtext="85% win rate with automation"
           />
         </div>
