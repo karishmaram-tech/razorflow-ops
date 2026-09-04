@@ -6,7 +6,7 @@ import Settings from './pages/Settings';
 
 function AppLayout() {
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="flex min-h-screen bg-[var(--bg-dark)]">
       <Sidebar />
       <main className="flex-1 overflow-auto">
         <Routes>
