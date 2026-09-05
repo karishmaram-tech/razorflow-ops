@@ -7,6 +7,7 @@ import AutomationDetail from './pages/AutomationDetail';
 import Settings from './pages/Settings';
 import FintechMobile from './pages/FintechMobile';
 import SoftUIDashboard from './pages/SoftUIDashboard';
+import FigmaDashboard from './pages/FigmaDashboard';
 
 function AppLayout() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/mobile/*" element={<MobileLayout />} />
+        <Route path="/figma" element={<FigmaDashboard />} />
         <Route path="/*" element={<AppLayout />} />
       </Routes>
     </BrowserRouter>
