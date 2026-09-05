@@ -1,52 +1,28 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LightSidebar from './components/light/Sidebar';
-import LightDashboard from './pages/LightDashboard';
-import PremiumDashboard from './pages/PremiumDashboard';
-import Dashboard from './pages/Dashboard';
-import AutomationDetail from './pages/AutomationDetail';
-import Settings from './pages/Settings';
-import FintechMobile from './pages/FintechMobile';
-import SoftUIDashboard from './pages/SoftUIDashboard';
-import FigmaDashboard from './pages/FigmaDashboard';
+import { RecoveryProvider } from './lib/RecoveryContext';
+import Shell from './components/layout/Shell';
 import RecoveryDashboard from './pages/RecoveryDashboard';
-
-function AppLayout() {
-  return (
-    <div className="flex min-h-screen" style={{ background: 'var(--bg-page)' }}>
-      <LightSidebar />
-      <main className="flex-1 overflow-auto">
-        <Routes>
-          <Route path="/" element={<LightDashboard />} />
-          <Route path="/dark" element={<PremiumDashboard />} />
-          <Route path="/classic" element={<Dashboard />} />
-          <Route path="/automations/:id" element={<AutomationDetail />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/softui" element={<SoftUIDashboard />} />
-        </Routes>
-      </main>
-    </div>
-  );
-}
-
-function MobileLayout() {
-  return (
-    <div className="max-w-md mx-auto min-h-screen" style={{ background: 'var(--bg-page)', borderLeft: '1px solid var(--border)', borderRight: '1px solid var(--border)' }}>
-      <Routes>
-        <Route path="/" element={<FintechMobile />} />
-      </Routes>
-    </div>
-  );
-}
+import PaymentDetail from './pages/PaymentDetail';
+import Strategies from './pages/Strategies';
+import Analytics from './pages/Analytics';
+import ControlCenter from './pages/ControlCenter';
+import AuditLog from './pages/AuditLog';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/mobile/*" element={<MobileLayout />} />
-        <Route path="/figma" element={<FigmaDashboard />} />
-        <Route path="/recovery" element={<RecoveryDashboard />} />
-        <Route path="/*" element={<AppLayout />} />
-      </Routes>
-    </BrowserRouter>
+    <RecoveryProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Shell />}>
+            <Route path="/" element={<RecoveryDashboard />} />
+            <Route path="/payments/:id" element={<PaymentDetail />} />
+            <Route path="/strategies" element={<Strategies />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/control-center" element={<ControlCenter />} />
+            <Route path="/audit-log" element={<AuditLog />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </RecoveryProvider>
   );
 }

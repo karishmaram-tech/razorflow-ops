@@ -1,7 +1,0 @@
-{
-  "name": "payflow-landing",
-  "private": true,
-  "scripts": {
-    "build": "echo 'Static HTML - no build needed'"
-  }
-}

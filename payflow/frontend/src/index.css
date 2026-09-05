@@ -1,26 +1,121 @@
 @import "tailwindcss";
-@import "./styles/light-premium.css";
 
 @theme {
-  --color-border: #e2e8f0;
-  --color-input: #e2e8f0;
-  --color-ring: #2563eb;
-  --color-background: #f8fafc;
-  --color-foreground: #0f172a;
-  --color-card: #ffffff;
-  --color-card-foreground: #0f172a;
-  --color-primary: #2563eb;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #f1f5f9;
-  --color-secondary-foreground: #0f172a;
-  --color-muted: #f1f5f9;
-  --color-muted-foreground: #94a3b8;
-  --color-accent: #f1f5f9;
-  --color-accent-foreground: #0f172a;
-  --color-destructive: #dc2626;
-  --color-destructive-foreground: #ffffff;
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
+  /* Type */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* Base surfaces */
+  --color-paper: #F0F1ED;
+  --color-surface: #FBFBF9;
+  --color-surface-raised: #FFFFFF;
+  --color-ink: #12151C;
+  --color-ink-soft: #4B5160;
+  --color-ink-faint: #8A8F9C;
+  --color-line: #DEDFD7;
+  --color-line-soft: #E9EAE3;
+
+  /* Brand */
+  --color-navy-900: #0D1526;
+  --color-navy-800: #16213A;
+  --color-navy-700: #1E2C4A;
+  --color-navy-600: #2B3E63;
+  --color-navy-500: #3C557F;
+  --color-signal: #2F5D8A;
+
+  /* Semantic */
+  --color-success-700: #175C3E;
+  --color-success-600: #1E7A52;
+  --color-success-100: #DCEEE3;
+  --color-warning-700: #8A5A0A;
+  --color-warning-600: #B5760A;
+  --color-warning-100: #F6E8CE;
+  --color-danger-700: #8C2E2E;
+  --color-danger-600: #B23B3B;
+  --color-danger-100: #F5DEDD;
+  --color-info-100: #DCE6EF;
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Shadow */
+  --shadow-card: 0 1px 2px rgba(13, 21, 38, 0.04), 0 1px 0 rgba(13, 21, 38, 0.03);
+  --shadow-raised: 0 4px 16px rgba(13, 21, 38, 0.08), 0 1px 2px rgba(13, 21, 38, 0.06);
+  --shadow-overlay: 0 16px 48px rgba(13, 21, 38, 0.18);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background: var(--color-navy-600);
+    color: white;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #D3D4CB;
+    border-radius: 8px;
+    border: 2px solid var(--color-paper);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer utilities {
+  .tick-in {
+    animation: tick-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes tick-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .pulse-dot {
+    animation: pulse-dot 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
 }
