@@ -140,6 +140,18 @@ export const AGENTS = [
   },
 ];
 
+export const SCENARIOS = [
+  { key: 'MIXED', label: 'Mixed (realistic)', reason: null },
+  { key: 'BANK_DECLINED', label: 'Temporary bank failures', reason: 'BANK_DECLINED' },
+  { key: 'INSUFFICIENT_FUNDS', label: 'Insufficient funds', reason: 'INSUFFICIENT_FUNDS' },
+  { key: 'EXPIRED_CARD', label: 'Expired payment method', reason: 'EXPIRED_CARD' },
+  { key: 'PROCESSOR_TIMEOUT', label: 'Processor timeout', reason: 'PROCESSOR_TIMEOUT' },
+  { key: 'AUTHENTICATION_FAILED', label: 'Authentication failure', reason: 'AUTHENTICATION_FAILED' },
+  { key: 'REPEATED_FAILURE', label: 'Repeated failure (3 attempts)', reason: null, forceAttempts: 3 },
+  { key: 'HIGH_VALUE', label: 'High-value payment', reason: null, forceHighValue: true },
+  { key: 'LOW_VALUE', label: 'Low-value payment', reason: null, forceLowValue: true },
+];
+
 export const STAGE_SEQUENCE = [
   'queued',
   'investigating',

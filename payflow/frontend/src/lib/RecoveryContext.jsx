@@ -10,7 +10,7 @@ import {
   runVerification,
   requiresApproval,
 } from './engine';
-import { FAILURE_REASONS, STRATEGIES } from './domain';
+import { FAILURE_REASONS, STRATEGIES, SCENARIOS } from './domain';
 
 const RecoveryStateContext = createContext(null);
 const RecoveryDispatchContext = createContext(null);
@@ -156,11 +156,22 @@ const initialState = {
   audit: [],
   controls: DEFAULT_CONTROLS,
   isRunning: true,
+  fastForward: false,
   demoMode: false,
   demoBatchIds: [],
   demoResult: null,
   clockTick: 0,
 };
+
+function scenarioOptions(scenarioKey) {
+  const scenario = SCENARIOS.find((s) => s.key === scenarioKey) || SCENARIOS[0];
+  const options = {};
+  if (scenario.reason) options.forceReason = scenario.reason;
+  if (scenario.forceAttempts) options.forceAttempts = scenario.forceAttempts;
+  if (scenario.forceHighValue) options.forceHighValue = true;
+  if (scenario.forceLowValue) options.forceLowValue = true;
+  return options;
+}
 
 function seedPayments() {
   const payments = [];
@@ -289,9 +300,44 @@ function reducer(state, action) {
       return { ...state, controls: { ...state.controls, ...action.payload } };
     case 'TOGGLE_RUNNING':
       return { ...state, isRunning: !state.isRunning };
-    case 'RUN_DEMO': {
+    case 'SET_SPEED':
+      return { ...state, fastForward: action.fast };
+    case 'GENERATE_PAYMENT': {
+      const fresh = createPayment(new Date(), { ...scenarioOptions(action.scenario), origin: 'sandbox' });
+      const activity = [{
+        id: `${fresh.id}-spawn-${Date.now()}`,
+        paymentId: fresh.id,
+        timestamp: new Date(),
+        text: `Synthetic payment failure generated — ₹${fresh.amount.toLocaleString('en-IN')}`,
+        agent: 'system',
+      }, ...state.activity].slice(0, 60);
+      return { ...state, payments: [fresh, ...state.payments], activity, isRunning: true };
+    }
+    case 'GENERATE_BATCH': {
       const now = Date.now();
-      const batch = Array.from({ length: 14 }, (_, i) => createPayment(new Date(now - i * 500)));
+      const opts = scenarioOptions(action.scenario);
+      const batch = Array.from({ length: action.count || 10 }, (_, i) => createPayment(new Date(now - i * 200), { ...opts, origin: 'sandbox' }));
+      const activity = [{
+        id: `batch-${now}`,
+        paymentId: null,
+        timestamp: new Date(),
+        text: `Synthetic batch generated — ${batch.length} payments`,
+        agent: 'system',
+      }, ...state.activity].slice(0, 60);
+      return { ...state, payments: [...batch, ...state.payments], activity, isRunning: true };
+    }
+    case 'RESET_SIMULATION':
+      return {
+        ...initialState,
+        controls: state.controls,
+        payments: [],
+        activity: [],
+        audit: [],
+      };
+    case 'START_RECOVERY': {
+      const now = Date.now();
+      const opts = scenarioOptions(action.scenario);
+      const batch = Array.from({ length: action.count || 14 }, (_, i) => createPayment(new Date(now - i * 500), { ...opts, origin: 'sandbox' }));
       return {
         ...state,
         payments: [...batch, ...state.payments],
@@ -316,12 +362,12 @@ export function RecoveryProvider({ children }) {
   const intervalRef = useRef(null);
 
   useEffect(() => {
-    const speed = state.demoMode ? 420 : 2400;
+    const speed = (state.demoMode || state.fastForward) ? 420 : 2400;
     intervalRef.current = setInterval(() => {
       if (state.isRunning) dispatch({ type: 'TICK' });
     }, speed);
     return () => clearInterval(intervalRef.current);
-  }, [state.isRunning, state.demoMode]);
+  }, [state.isRunning, state.demoMode, state.fastForward]);
 
   return (
     <RecoveryStateContext.Provider value={state}>

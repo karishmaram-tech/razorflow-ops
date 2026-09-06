@@ -72,7 +72,7 @@ export default function Analytics() {
           <EmptyState
             icon={LineChartIcon}
             title="No resolved payments yet"
-            description="Charts will populate once RecoveryFlow has resolved at least one payment. Try running the recovery simulation from the command center."
+            description="Charts will populate once RecoveryFlow has resolved at least one payment. The engine resolves payments continuously, or you can generate a batch from the Sandbox to fill this in faster."
           />
         </Card>
       </div>

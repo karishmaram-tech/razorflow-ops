@@ -40,16 +40,18 @@ function jitter(base, spread = 0.12) {
   return base + (Math.random() * 2 - 1) * spread;
 }
 
-export function createPayment(now = new Date()) {
+export function createPayment(now = new Date(), options = {}) {
   const id = `RF-${idCounter++}`;
-  const failureReason = weightedReason();
-  const amount = pick(AMOUNT_POOL) + Math.round((Math.random() * 400) - 200);
-  const attempts = Math.random() < 0.7 ? 1 : Math.random() < 0.85 ? 2 : 3;
+  const failureReason = options.forceReason || weightedReason();
+  let amount = pick(AMOUNT_POOL) + Math.round((Math.random() * 400) - 200);
+  if (options.forceHighValue) amount = 45000 + Math.round(Math.random() * 20000);
+  if (options.forceLowValue) amount = 499 + Math.round(Math.random() * 1000);
+  const attempts = options.forceAttempts || (Math.random() < 0.7 ? 1 : Math.random() < 0.85 ? 2 : 3);
   const customerTenureMonths = 1 + Math.floor(Math.random() * 30);
 
   return {
     id,
-    amount: Math.max(999, amount),
+    amount: Math.max(499, amount),
     method: pick(PAYMENT_METHODS),
     processor: pick(PROCESSORS),
     failureReason,
@@ -63,6 +65,7 @@ export function createPayment(now = new Date()) {
     decision: null,
     outcome: null,
     stageEnteredAt: now,
+    origin: options.origin || 'engine',
   };
 }
 

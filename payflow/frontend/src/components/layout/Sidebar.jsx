@@ -1,17 +1,17 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import {
-  LayoutGrid, Workflow, LineChart, ShieldCheck, ScrollText, Radio,
+  LayoutGrid, Workflow, LineChart, ShieldCheck, ScrollText, Radio, FlaskConical,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useRecoveryState, useRecoveryDispatch } from '../../lib/RecoveryContext';
 import Toggle from '../ui/Toggle';
 
 const NAV = [
-  { to: '/', label: 'Command center', icon: LayoutGrid, end: true },
-  { to: '/strategies', label: 'Strategies', icon: Workflow },
-  { to: '/analytics', label: 'Analytics', icon: LineChart },
-  { to: '/control-center', label: 'Control center', icon: ShieldCheck },
-  { to: '/audit-log', label: 'Audit log', icon: ScrollText },
+  { to: '/app', label: 'Command center', icon: LayoutGrid, end: true },
+  { to: '/app/strategies', label: 'Strategies', icon: Workflow },
+  { to: '/app/analytics', label: 'Analytics', icon: LineChart },
+  { to: '/app/control-center', label: 'Control center', icon: ShieldCheck },
+  { to: '/app/audit-log', label: 'Audit log', icon: ScrollText },
 ];
 
 export default function Sidebar() {
@@ -20,7 +20,7 @@ export default function Sidebar() {
 
   return (
     <aside className="hidden lg:flex lg:w-60 lg:flex-col lg:border-r lg:border-[var(--color-line)] lg:bg-[var(--color-navy-900)]">
-      <div className="flex h-16 items-center gap-2.5 px-5">
+      <Link to="/" className="flex h-16 items-center gap-2.5 px-5">
         <div className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-xs)] bg-[var(--color-signal)]">
           <Radio size={15} className="text-white" strokeWidth={2.25} />
         </div>
@@ -28,7 +28,7 @@ export default function Sidebar() {
           <p className="text-[14px] font-semibold text-white">RecoveryFlow</p>
           <p className="text-[10.5px] uppercase tracking-wide text-white/45">Revenue recovery</p>
         </div>
-      </div>
+      </Link>
 
       <nav className="flex flex-1 flex-col gap-0.5 px-3 py-2">
         {NAV.map(({ to, label, icon: Icon, end }) => (
@@ -45,6 +45,19 @@ export default function Sidebar() {
             {label}
           </NavLink>
         ))}
+
+        <div className="my-2 h-px bg-white/10" />
+
+        <NavLink
+          to="/app/sandbox"
+          className={({ isActive }) => clsx(
+            'flex items-center gap-2.5 rounded-[var(--radius-sm)] px-3 py-2 text-[13.5px] font-medium transition-colors',
+            isActive ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5 hover:text-white/90',
+          )}
+        >
+          <FlaskConical size={16} strokeWidth={2} />
+          Sandbox
+        </NavLink>
       </nav>
 
       <div className="mx-3 mb-4 rounded-[var(--radius-md)] border border-white/10 bg-white/5 px-3 py-3">

@@ -45,7 +45,7 @@ export default function AttentionTable({ payments }) {
               {relevant.map((p) => (
                 <tr key={p.id} className="border-b border-[var(--color-line-soft)] last:border-0 hover:bg-[var(--color-surface)]">
                   <td className="px-5 py-3">
-                    <Link to={`/payments/${p.id}`} className="group flex flex-col hover:underline">
+                    <Link to={`/app/payments/${p.id}`} className="group flex flex-col hover:underline">
                       <span className="font-mono text-[13px] font-medium text-[var(--color-ink)]">{p.id}</span>
                       <span className="font-mono text-[12px] text-[var(--color-ink-faint)]">{formatINR(p.amount)}</span>
                     </Link>
@@ -68,7 +68,7 @@ export default function AttentionTable({ payments }) {
                           </Button>
                         </>
                       ) : (
-                        <Link to={`/payments/${p.id}`}>
+                        <Link to={`/app/payments/${p.id}`}>
                           <Button size="sm" variant="ghost" icon={ChevronRight}>Inspect</Button>
                         </Link>
                       )}

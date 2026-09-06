@@ -1,13 +1,13 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutGrid, Workflow, LineChart, ShieldCheck, ScrollText } from 'lucide-react';
+import { LayoutGrid, Workflow, LineChart, ShieldCheck, FlaskConical } from 'lucide-react';
 import clsx from 'clsx';
 
 const NAV = [
-  { to: '/', label: 'Center', icon: LayoutGrid, end: true },
-  { to: '/strategies', label: 'Strategies', icon: Workflow },
-  { to: '/analytics', label: 'Analytics', icon: LineChart },
-  { to: '/control-center', label: 'Control', icon: ShieldCheck },
-  { to: '/audit-log', label: 'Audit', icon: ScrollText },
+  { to: '/app', label: 'Center', icon: LayoutGrid, end: true },
+  { to: '/app/strategies', label: 'Strategies', icon: Workflow },
+  { to: '/app/analytics', label: 'Analytics', icon: LineChart },
+  { to: '/app/control-center', label: 'Control', icon: ShieldCheck },
+  { to: '/app/sandbox', label: 'Sandbox', icon: FlaskConical },
 ];
 
 export default function MobileNav() {

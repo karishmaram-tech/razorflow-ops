@@ -25,13 +25,13 @@ export default function PaymentDetail() {
   const dispatch = useRecoveryDispatch();
   const payment = payments.find((p) => p.id === id);
 
-  if (!payment) return <Navigate to="/" replace />;
+  if (!payment) return <Navigate to="/app" replace />;
 
   const info = FAILURE_REASONS[payment.failureReason];
 
   return (
     <div className="mx-auto flex max-w-[1100px] flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
-      <Link to="/" className="flex w-fit items-center gap-1.5 text-[13px] font-medium text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]">
+      <Link to="/app" className="flex w-fit items-center gap-1.5 text-[13px] font-medium text-[var(--color-ink-soft)] hover:text-[var(--color-ink)]">
         <ArrowLeft size={15} />
         Back to command center
       </Link>
